@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE Hello world</title>
+</head>
+<body style="line-height: 2">
+
+<input placeholder="name" id="name"/>
+
+</br>
+
+<button onclick="openStream()">open stream</button>
+<button onclick="closeStream()">close stream</button>
+
+</br>
+
+<div>
+    Output: <output id="eventOutput"></output>
+</div>
+
+
+<script>
+
+    var eventSource = null;
+
+    function createEventSource() {
+
+        let name = document.getElementById('name').value;
+        if (!name.trim()) {
+            name = "john";
+        }
+
+        eventSource = new EventSource("http://localhost:8080/open-sse-stream/" + name);
+
+        eventSource.onmessage = function(event) {
+          console.log(event.data);
+          document.getElementById('eventOutput').value = event.data;
+        };
+    };
+
+    function closeStream() {
+        eventSource.close();
+    }
+
+    function openStream() {
+        if (eventSource !== null && eventSource.readyState !== EventSource.CLOSED) {
+            console.log("stream already opened");
+            return;
+        }
+
+        createEventSource();
+    }
+</script>
+</body>
+</html>
